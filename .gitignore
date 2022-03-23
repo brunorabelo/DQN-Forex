@@ -1,0 +1,12 @@
+results/*
+plots/*
+data/marketdata.db
+.idea
+
+venv/
+env/
+
+pessoal.md
+
+__pycache__
+dqn/backup.py
