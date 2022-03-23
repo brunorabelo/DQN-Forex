@@ -10,3 +10,5 @@ pessoal.md
 
 __pycache__
 dqn/backup.py
+
+weights/*
