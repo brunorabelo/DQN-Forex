@@ -1,5 +1,9 @@
 results/*
 plots/*
+weights/*
+!results/.gitkeep
+!plots/.gitkeep
+!weights/.gitkeep
 data/marketdata.db
 .idea
 
@@ -10,5 +14,3 @@ pessoal.md
 
 __pycache__
 dqn/backup.py
-
-weights/*
