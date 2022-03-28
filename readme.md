@@ -30,3 +30,4 @@ It is still in development.
 - [ ] Add more reward types
 - [ ] Use more data
 - [ ] Use different window times
+- [ ] Use a set for testing and apply backtesting
