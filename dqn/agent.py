@@ -53,6 +53,7 @@ class Agent:
         # Dueling-Q-Network
         self.qnetwork_local = DuelingQNetwork(state_size, action_size, seed).to(device)
         self.qnetwork_target = DuelingQNetwork(state_size, action_size, seed).to(device)
+        self.qnetwork_target.load_state_dict(self.qnetwork_local.state_dict())
         self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=self.learning_rate)
 
         # Replay memory

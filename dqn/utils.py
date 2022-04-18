@@ -17,12 +17,12 @@ def get_absolute_path(path=""):
 
 def get_csv():
     yf.pdr_override()
-    df_full = pdr.get_data_yahoo("EURUSD=X", start="2019-01-01", end="2019-12-31").reset_index()
+    df_full = pdr.get_data_yahoo("EURUSD=X", start="2015-01-01", end="2020-01-31").reset_index()
     # df_full = pdr.get_data_yahoo("INFY", start="2018-01-01").reset_index()
-    df_full.to_csv('../data/EURUSD_2019.csv', index=False)
+    df_full.to_csv('../data/EURUSD_2015-2019.csv', index=False)
 
 
-def plot_csv(path="../data/EURBRL_2017.csv"):
+def plot_csv(path="../data/EURBRL_2019.csv"):
     data_df = pd.read_csv(path)
     values = data_df.Close.values
     values2 = values - min(values)
@@ -54,4 +54,5 @@ def plot_csv(path="../data/EURBRL_2017.csv"):
 
 
 print(get_absolute_path("results/"))
-get_csv()
+# get_csv()
+# plot_csv()

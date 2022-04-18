@@ -96,7 +96,7 @@ class Env:
         next_state = self.get_state()
         self.daily_balance.append(self.balance())
         reward = self.reward_type.reward_function(self.daily_balance, 0)
-        done = self.money < 0
+        done = self.money < 0 or self.time > len(self.data) - self.window_size
         return next_state, reward, done, {"balance": self.balance(), 'date': self.get_current_date()}
 
     def balance(self):
