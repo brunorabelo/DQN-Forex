@@ -6,9 +6,9 @@ from dqn.rewards import DailyReturnReward, SortinoRatioReward, SharpeRatioReward
 episodes = 5000
 
 # Select the reward type. Uncomment the one you want and comment the others
-reward_type = DailyReturnReward
+# reward_type = DailyReturnReward
 # reward_type = SortinoRatioReward
-# reward_type = SharpeRatioReward
+reward_type = SharpeRatioReward
 
 env = Env(window_size=30, reward_type=reward_type)
 train.train(episodes=episodes, env=env)

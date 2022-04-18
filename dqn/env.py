@@ -1,8 +1,6 @@
-from copy import copy
-import sqlite3
-
 import pandas as pd
 import numpy as np
+
 
 # data_path = 'data/EURUSD_2010.csv'
 
@@ -11,18 +9,21 @@ import numpy as np
 
 class Env:
 
-    def __init__(self, window_size, initial_money=10_000, reward_type=None, path="data/EURBRL_2017.csv"):
-        self.actions = [0, 1, 2]
+    def __init__(self, window_size, initial_money=10_000, reward_type=None, path="data/EURUSD_2019.csv"):
+        self.actions = [0, 1, 2, 3]
         self.window_size = window_size
         self.inventory = 0
         self.initial_money = initial_money
         self.money = initial_money
         self.time = 1  # count the amount of days
-        self.data = self.get_data(path=path)
+        self.data = []
+        self.dates = []
         self.reward_type = reward_type
         self.daily_balance = []
 
-    def get_data(self, path):
+        self.get_data_and_dates(path=path)
+
+    def get_data_and_dates(self, path):
         # cnx = sqlite3.connect(path)
         data_df = pd.read_csv(path)
         values = data_df.Close.values
@@ -32,7 +33,8 @@ class Env:
         # res -= min(res)
         # print(res.mean(), res.std())
         res = values / values[0]
-        return res
+        self.data = res
+        self.dates = data_df.Date.values
 
     def reset(self):
         self.money = self.initial_money
@@ -45,6 +47,9 @@ class Env:
 
     def get_current_price(self):
         return self.data[self.time + self.window_size]
+
+    def get_current_date(self):
+        return self.dates[self.time + self.window_size]
 
     def get_state(self):
         # starts out actually in the day 30° to have the past data available
@@ -59,14 +64,9 @@ class Env:
         print(f"money: {self.money}")
 
     def step(self, action, render=True):
-        return self.step_1_unit(action, render=render)
-
-    def step_1_unit(self, action, render=True):
         """
         :param action:
-        0 1 2 => {hold, buy, sell}
-        :param render:
-        0 1 2 => {hold, buy, sell}
+        0 1 2 3 => {hold, buy, sell, close}
         :return:
         """
         msg = ""
@@ -81,6 +81,12 @@ class Env:
             self.money += price
             self.inventory -= 1
             msg = f'day {self.time}: sold 1 unit at price {price} | money_left: {self.money} | total balance {self.balance()}'
+        elif action == 3 and self.inventory > 0:
+            # close
+            units = self.inventory
+            self.money += price * units
+            self.inventory = 0
+            msg = f'day {self.time}: sold {units} unit at price {price} | money_left: {self.money} | total balance {self.balance()}'
         else:
             msg = f"day {self.time}: hold | money_left: {self.money} | total balance: {self.balance()}"
         if render:
@@ -91,10 +97,7 @@ class Env:
         self.daily_balance.append(self.balance())
         reward = self.reward_type.reward_function(self.daily_balance, 0)
         done = self.money < 0
-        return next_state, reward, done, {"balance": self.balance()}
-
-    def step_all_units(self, action):
-        pass
+        return next_state, reward, done, {"balance": self.balance(), 'date': self.get_current_date()}
 
     def balance(self):
         return self.money + self.inventory * self.get_current_price()
