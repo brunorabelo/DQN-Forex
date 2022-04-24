@@ -52,7 +52,48 @@ def plot_csv(path="../data/EURBRL_2019.csv"):
     plt.legend()
     plt.savefig(f"../plots/data_norm")
 
+def plot_results(df):
+    #
+    print(df)
+    fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(5, 1)
 
-print(get_absolute_path("results/"))
+    # Plot
+
+    ax1.plot(df["balance"], marker='o')
+
+    ax2.plot(df["inventory"])
+
+    ax3.plot(df["cash"])
+
+    ax4.plot(df["sharpe"])
+
+    ax5.plot(df['sortino'])
+
+    #     ax1.xlabel("Date")
+    #     ax1.ylabel("Total balance")
+    #     ax1.title("Balance")
+    # ax2.xlabel("Date")
+    # ax2.ylabel("Inventory")
+    # ax2.title("Inventory")
+    # labeling
+    # ax3.xlabel("Date")
+    # ax3.ylabel("Cash")
+    # ax3.title("Cash")
+    # # labeling
+    # ax4.xlabel("Date")
+    # ax4.ylabel("Sharpe")
+    # ax4.title("Sharpe")
+    # # labeling
+    # ax5.xlabel("Date")
+    # ax5.ylabel("Sortino")
+    # ax5.title("Sortino")
+
+
+    fig.savefig(
+        f'{get_absolute_path("testing_results")}/'
+        f'ddqn_{model_name}'
+        f'.png')
+
+    print(get_absolute_path("results/"))
 # get_csv()
 # plot_csv()

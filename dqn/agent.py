@@ -26,7 +26,7 @@ class Agent:
             seed (int): random seed
         """
 
-        assert (epsilon_delta or epsilon_decay), "Epsilon delta and epsilon decay were not defined"
+        assert (epsilon_delta is not None or epsilon_decay is not None), "Epsilon delta and epsilon decay were not defined"
 
         self.state_size = state_size
         self.action_size = action_size
@@ -68,13 +68,16 @@ class Agent:
         # Save experience in replay memory
         self.memory.add(state, action, reward, next_state, done)
 
-        # Learn every UPDATE_EVERY time steps.
+        # update target every UPDATE_EVERY time steps.
         self.t_step = (self.t_step + 1) % self.update_every
         if self.t_step == 0:
+
             # If enough samples are available in memory, get random subset and learn
             if len(self.memory) > self.batch_size:
                 experiences = self.memory.sample()
                 self.learn(experiences, self.gamma)
+
+            # self.soft_update(self.qnetwork_local, self.qnetwork_target, self.tau)
 
     def act(self, state):
         """Returns actions for given state as per current policy.

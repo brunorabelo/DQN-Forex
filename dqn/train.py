@@ -1,4 +1,8 @@
-from datetime import datetime
+import time
+from datetime import datetime, timedelta
+
+import numpy as np
+
 from .agent import Agent as DDQNAgent
 import matplotlib.pyplot as plt
 # episodes = 5_000  # Number of episodes used for training
@@ -9,8 +13,9 @@ BATCH_SIZE = 64
 # EPSILON_DECAY = 0.9995
 START_EPSILON = 1.0
 FINAL_EPSILON = 0.01
-TRAINING_END_DATE = '2019-07-01'
+TRAINING_END_DATE = '2016-07-01'
 RENDER = False
+elapsed_times = []
 
 
 def train(episodes, env):
@@ -27,6 +32,7 @@ def train(episodes, env):
     final_balance_history = []
     data_size = len(env.data)
     for episode in range(1, episodes + 1):
+        st = time.perf_counter()
         state = env.reset()
         cumulative_reward = 0.0
         final_balance = 0.0
@@ -53,18 +59,29 @@ def train(episodes, env):
                       .format(episode, episodes, current_training_date, cumulative_reward, agent.epsilon))
                 break
 
+        elapsed_time = time.perf_counter() - st
+        elapsed_times.append(elapsed_time)
+        left_episodes = episodes - episode
+        left_time = elapsed_time * left_episodes
         print(
             f"episode: {episode}/{episodes}, "
             f"end_date: {current_training_date}, "
             f"score: {cumulative_reward}, "
             f"balance: {final_balance}, "
-            f"epsilon: {agent.epsilon}")
-
+            f"epsilon: {agent.epsilon}, "
+            f"left_time: {str(timedelta(seconds=left_time))}"
+        )
         final_balance_history.append(final_balance)
         reward_history.append(cumulative_reward)
         agent.update_epsilon()
         # Every 10 episodes, update the plot for training monitoring
         if episode % 20 == 0:
+            mean_time = np.mean(elapsed_times)
+            elapsed_times.clear()
+            left_episodes = episodes - episode
+            left_time = mean_time * left_episodes
+            print(f"left_episodes: {left_episodes}, left_time: {str(timedelta(seconds=left_time))}")
+
             fig, (ax1, ax2) = plt.subplots(1, 2)
             ax1.plot(final_balance_history, 'r')
             ax2.plot(reward_history, 'b')
