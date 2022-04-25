@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from dqn.env import Env
 from dqn import train, run_model
 from dqn.rewards import DailyReturnReward, SortinoRatioReward, SharpeRatioReward
-from dqn.utils import get_absolute_path
+from dqn.utils import get_absolute_path, paired_t_test
 from tabulate import tabulate
 
 
@@ -26,10 +26,10 @@ def prepare_models():
     env = Env(window_size=30, reward_type=reward_type)
     train.train(episodes=episodes, env=env)
 
-    reward_type = SharpeRatioReward
-
-    env = Env(window_size=30, reward_type=reward_type)
-    train.train(episodes=episodes, env=env)
+    # reward_type = SharpeRatioReward
+    #
+    # env = Env(window_size=30, reward_type=reward_type)
+    # train.train(episodes=episodes, env=env)
 
 
 def execute_models():
@@ -40,16 +40,25 @@ def execute_models():
     weight_path = 'checkpoint_ddqn_2022_04_21-10:59:02_PM__REWARD_DailyReturn__EPISODES_2000__FINAL_DATE_2016-07-01.pth'
     pnl = run_model.run(env, weight_path)
 
-    reward_type = SortinoRatioReward
+    # reward_type = SortinoRatioReward
+    # # reward_type = SharpeRatioReward
+    # env = Env(window_size=30, reward_type=reward_type)
+    # weight_path = 'checkpoint_ddqn_2022_04_25-02:13:23_PM__REWARD_SortinoRatio__EPISODES_600__FINAL_DATE_2016-07-01.pth'
+    # sortino = run_model.run(env, weight_path)
+
+
+    reward_type = DailyReturnReward
+    # reward_type = SortinoRatioReward
     # reward_type = SharpeRatioReward
     env = Env(window_size=30, reward_type=reward_type)
-    weight_path = 'checkpoint_ddqn_2022_04_23-11:36:36_AM__REWARD_SortinoRatio__EPISODES_1000__FINAL_DATE_2016-07-01.pth'
+    weight_path =  'checkpoint_ddqn_2022_04_25-02:13:23_PM__REWARD_SortinoRatio__EPISODES_400__FINAL_DATE_2016-07-01.pth'
     sortino = run_model.run(env, weight_path)
+
 
     reward_type = SharpeRatioReward
     # reward_type = SortinoRatioReward
     env = Env(window_size=30, reward_type=reward_type)
-    weight_path = 'checkpoint_ddqn_2022_04_22-09:01:29_PM__REWARD_SharpeRatio__EPISODES_2000__FINAL_DATE_2016-07-01.pth'
+    weight_path = 'checkpoint_ddqn_2022_04_25-07:20:52_AM__REWARD_SharpeRatio__EPISODES_1000__FINAL_DATE_2016-07-01.pth'
     sharpe = run_model.run(env, weight_path)
 
     env = Env(window_size=30, reward_type=reward_type)
@@ -83,6 +92,27 @@ def execute_models():
     print("Random")
     extract_info_table(random)
     print("-----------------------------------------------------")
+
+    statistics(pnl, random)
+    pnl.to_csv(f'{get_absolute_path("testing_results")}/'
+               f'pnl.csv')
+    random.to_csv(f'{get_absolute_path("testing_results")}/'
+                  f'random.csv')
+    sharpe.to_csv(f'{get_absolute_path("testing_results")}/'
+                  f'sharpe.csv')
+
+
+def statistics(df1, df2):
+    df1 = df1.loc['2015-01-01':'2019-12-31']
+    df2 = df2.loc['2015-01-01':'2019-12-31']
+    t, pvalue = paired_t_test(df1['sharpe'], df2['sharpe'])
+    print(f"P-value (sharpe): {pvalue}")
+    arr = np.array(df1['balance'])
+    daily_returns1 = arr[1:] / arr[:-1] - 1
+    arr = np.array(df2['balance'])
+    daily_returns2 = arr[1:] / arr[:-1] - 1
+    t, pvalue = paired_t_test(daily_returns1, daily_returns2)
+    print(f"P-value ( daily returns): {pvalue}")
 
 
 def extract_info_table(df):
@@ -131,7 +161,7 @@ def extract_info_table(df):
         ["sharp", backtest_sharp, final_sharp, outofsample_sharp],
         ["sortino", backtest_sortino, final_sortino, outofsample_sortino],
     ]
-    print(tabulate(res, headers=["statistics", "backtest", "total", "outofsample"],tablefmt="latex"))
+    print(tabulate(res, headers=["statistics", "backtest", "total", "outofsample"], tablefmt="latex"))
 
 
 def plot_fig(column, pnl, random, sharpe, sortino):
@@ -149,5 +179,5 @@ def plot_fig(column, pnl, random, sharpe, sortino):
         f'.png')
 
 
-# execute_models()
-prepare_models()
+execute_models()
+# prepare_models()

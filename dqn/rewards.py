@@ -7,9 +7,9 @@ def daily_return(daily_balance, risk_free=0):
     return daily_returns[-1] if len(daily_returns) > 0 else 0
 
 
-def sharpe_ratio(daily_balance, risk_free=0):
+def sharpe_ratio(daily_balance, risk_free=0, last_21=True):
     arr = np.array(daily_balance)
-    if len(arr) > 21:
+    if len(arr) > 21 and last_21:
         arr = arr[-21:]
     daily_returns = arr[1:] / arr[:-1] - 1
     rp = np.mean(daily_returns)
@@ -21,13 +21,13 @@ def sharpe_ratio(daily_balance, risk_free=0):
     return ratio
 
 
-def sortino_ratio(daily_balance, risk_free=0):
+def sortino_ratio(daily_balance, risk_free=0, last_21=True):
     arr = np.array(daily_balance)
-    if len(arr) > 21:
+    if len(arr) > 21 and last_21:
         arr = arr[-21:]
     daily_returns = arr[1:] / arr[:-1] - 1
     rp = np.mean(daily_returns)
-    std = np.std(daily_returns[daily_returns > 0])
+    std = np.std(daily_returns[daily_returns < 0])
     if std == 0:
         std = 1
     ratio = (rp - risk_free) / std

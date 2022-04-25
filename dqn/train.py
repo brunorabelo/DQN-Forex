@@ -102,7 +102,7 @@ def train(episodes, env):
             # Saving the model to disk
             # agent.save("trained_model_reward.h5")
 
-        if episode % 1000 == 0:
+        if episode % 200 == 0:
             agent.save(f'{get_absolute_path("weights")}/'
                        f'checkpoint_ddqn_{date}'
                        f'__REWARD_{env.reward_type.name}'

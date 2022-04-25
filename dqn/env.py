@@ -9,7 +9,7 @@ import numpy as np
 
 class Env:
 
-    def __init__(self, window_size, initial_money=10_000, reward_type=None, path="data/EURUSD_2015-2019.csv"):
+    def __init__(self, window_size, initial_money=10_000, reward_type=None, path="data/EURUSD_2015-2022.csv"):
         self.actions = [0, 1, 2, 3, 4, 5]
         self.window_size = window_size
         self.inventory = 0

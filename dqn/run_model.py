@@ -14,6 +14,7 @@ BATCH_SIZE = 64
 START_EPSILON = 1.0
 FINAL_EPSILON = 0.01
 TESTING_END_DATE = '2019-12-31'
+# TESTING_END_DATE = '2022-02-01'
 RENDER = False
 
 
@@ -56,8 +57,8 @@ def run(env, model_name):
         data['inventory'].append(info.get("inventory"))
         data['cash'].append(info.get("cash"))
 
-        sharpe = rewards.sharpe_ratio(data['balance'])
-        sortino = rewards.sortino_ratio(data['balance'])
+        sharpe = rewards.sharpe_ratio(data['balance'], last_21=False)
+        sortino = rewards.sortino_ratio(data['balance'], last_21=False)
 
         data['sharpe'].append(sharpe)
         data['sortino'].append(sortino)

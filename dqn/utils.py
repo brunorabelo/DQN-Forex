@@ -17,9 +17,9 @@ def get_absolute_path(path=""):
 
 def get_csv():
     yf.pdr_override()
-    df_full = pdr.get_data_yahoo("EURUSD=X", start="2015-01-01", end="2020-01-31").reset_index()
+    df_full = pdr.get_data_yahoo("EURUSD=X", start="2015-01-01", end="2022-04-01").reset_index()
     # df_full = pdr.get_data_yahoo("INFY", start="2018-01-01").reset_index()
-    df_full.to_csv('../data/EURUSD_2015-2019.csv', index=False)
+    df_full.to_csv('../data/EURUSD_2015-2022.csv', index=False)
 
 
 def plot_csv(path="../data/EURBRL_2019.csv"):
@@ -51,6 +51,35 @@ def plot_csv(path="../data/EURBRL_2019.csv"):
     plt.plot(res, label="norm variance 1 divided by inital value")
     plt.legend()
     plt.savefig(f"../plots/data_norm")
+
+
+def paired_t_test(s1, s2):
+    import numpy as np
+    # paired t test
+    t, p = ttest(s1, s2, alternative='greater')
+    print(t, p)
+    return t, p
+
+
+def ttest(a, b, axis=0, equal_var=True, nan_policy='propagate',
+          alternative='two.sided'):
+    from scipy import stats
+    tval, pval = stats.ttest_ind(a=a, b=b, axis=axis, equal_var=equal_var,
+                                 nan_policy=nan_policy)
+    if alternative == 'greater':
+        if tval < 0:
+            pval = 1 - pval / 2
+        else:
+            pval = pval / 2
+    elif alternative == 'less':
+        if tval < 0:
+            pval /= 2
+        else:
+            pval = 1 - pval / 2
+    else:
+        assert alternative == 'two.sided'
+    return tval, pval
+
 
 def plot_results(df):
     #
@@ -87,7 +116,6 @@ def plot_results(df):
     # ax5.xlabel("Date")
     # ax5.ylabel("Sortino")
     # ax5.title("Sortino")
-
 
     fig.savefig(
         f'{get_absolute_path("testing_results")}/'
