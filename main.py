@@ -179,5 +179,5 @@ def plot_fig(column, pnl, random, sharpe, sortino):
         f'.png')
 
 
-execute_models()
-# prepare_models()
+# execute_models()
+prepare_models()
